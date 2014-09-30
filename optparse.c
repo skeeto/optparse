@@ -76,3 +76,12 @@ int optparse(struct optparse *opts, const char *spec)
     }
     return 0;
 }
+
+char *optparse_arg(struct optparse *opts)
+{
+    opts->subopt = 0;
+    char *arg = opts->argv[opts->optind];
+    if (arg != NULL)
+        opts->optind++;
+    return arg;
+}

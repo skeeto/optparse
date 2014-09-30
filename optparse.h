@@ -14,7 +14,8 @@ struct optparse {
     char errmsg[48];
 };
 
-void optparse_init(struct optparse *opts, int argc, char **argv);
-int  optparse(struct optparse *opts, const char *spec);
+void  optparse_init(struct optparse *opts, int argc, char **argv);
+int   optparse(struct optparse *opts, const char *spec);
+char *optparse_arg(struct optparse *opts);
 
 #endif

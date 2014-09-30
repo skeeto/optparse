@@ -6,7 +6,7 @@ main.o : main.c optparse.h
 optparse.o : optparse.c optparse.h
 
 run : main
-	./$^ -abdfoo -c bar
+	./$^ -abdfoo -c bar subcommand example.txt
 
 clean :
 	$(RM) test *.o

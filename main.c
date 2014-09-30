@@ -9,6 +9,8 @@ void try_getopt(int argc, char **argv)
         printf("%c (%d) = '%s'\n", opt, optind, optarg);
     }
     printf("optind = %d\n", optind);
+    for (; optind < argc; optind++)
+        printf("argument: %s\n", argv[optind]);
 }
 
 void try_optparse(int argc, char **argv)
@@ -22,6 +24,9 @@ void try_optparse(int argc, char **argv)
         printf("%c (%d) = '%s'\n", opt, options.optind, options.optarg);
     }
     printf("optind = %d\n", options.optind);
+    char *arg;
+    while ((arg = optparse_arg(&options)))
+        printf("argument: %s\n", arg);
 }
 
 int main(int argc, char **argv)
