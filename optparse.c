@@ -31,6 +31,7 @@ static enum argspec argspec(const char *optstring, char c)
 
 int optparse(struct optparse *opts, const char *optstring)
 {
+    opts->errmsg[0] = '\0';
     opts->optopt = 0;
     char *arg = opts->argv[opts->optind];
     if (arg == NULL || arg[0] != '-' || arg[1] == '-')
