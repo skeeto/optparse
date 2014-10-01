@@ -126,6 +126,7 @@ int main(int argc, char **argv)
             delay = options.optarg ? atoi(options.optarg) : 1;
             break;
         case '?':
+            fprintf(stderr, "%s: %s\n", argv[0], options.errmsg);
             exit(EXIT_FAILURE);
         }
     }
@@ -178,6 +179,7 @@ int main(int argc, char **argv)
             delay = optarg ? atoi(optarg) : 1;
             break;
         case '?':
+            fprintf(stderr, "%s: %s\n", argv[0], options.errmsg);
             exit(EXIT_FAILURE);
         }
     }
