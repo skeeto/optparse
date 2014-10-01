@@ -192,5 +192,6 @@ optparse_long(struct optparse *options,
             return options->optopt;
         }
     }
-    return 0;
+    opterror(options, "invalid option -- '%s'", option);
+    return '?';
 }
