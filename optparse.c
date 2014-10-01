@@ -11,7 +11,8 @@ void optparse_init(struct optparse *opts, int argc, char **argv)
     opts->errmsg[0] = '\0';
 }
 
-static enum optparse_argtype argtype(const char *optstring, char c)
+static enum optparse_argtype
+argtype(const char *optstring, char c)
 {
     if (c == ':')
         return -1;
@@ -134,7 +135,8 @@ longopts_match(const char *longname, const char *option)
     return *n == '\0' && (*a == '\0' || *a == '=');
 }
 
-static const char *longopts_arg(const char *option)
+static const char *
+longopts_arg(const char *option)
 {
     for (; *option && *option != '='; option++);
     if (*option == '=')
