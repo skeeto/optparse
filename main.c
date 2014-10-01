@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "optparse.h"
 #include <getopt.h>
+#include "optparse.h"
 
 void print_argv(char **argv)
 {
