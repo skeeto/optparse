@@ -36,7 +36,7 @@ int optparse(struct optparse *options, const char *optstring)
     if (option == NULL || option[0] != '-') {
         return -1;
     } else if (option[0] == '-' && option[1] == '-' && option[2] == '\0') {
-        options->optind++; // consume "--" optionument
+        options->optind++; // consume "--" argument
         return -1;
     } else if (option[1] == '-') {
         return -1;
