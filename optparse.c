@@ -13,34 +13,36 @@ void optparse_init(struct optparse *opts, int argc, char **argv)
 
 enum argspec { UNDEFINED = 0, NONE, REQUIRED, OPTIONAL };
 
-static enum argspec argspec(const char *spec, char c)
+static enum argspec argspec(const char *optstring, char c)
 {
-    if (c == ':' || c == '?')
+    if (c == ':')
         return UNDEFINED;
-    for (; *spec && c != *spec; spec++);
-    if (!*spec)
+    for (; *optstring && c != *optstring; optstring++);
+    if (!*optstring)
         return UNDEFINED;
     enum argspec count = 1;
-    if (spec[1] == ':')
-        count += spec[2] == ':' ? 2 : 1;
+    if (optstring[1] == ':')
+        count += optstring[2] == ':' ? 2 : 1;
     return count;
 }
 
 #define opterror(opts, format, args...)                         \
     snprintf(opts->errmsg, sizeof(opts->errmsg), format, args);
 
-int optparse(struct optparse *opts, const char *spec)
+int optparse(struct optparse *opts, const char *optstring)
 {
+    opts->optopt = 0;
     char *arg = opts->argv[opts->optind];
     if (arg == NULL || arg[0] != '-' || arg[1] == '-')
         return -1;
     arg += opts->subopt + 1;
-    enum argspec type = argspec(spec, arg[0]);
+    enum argspec type = argspec(optstring, arg[0]);
     char *next = opts->argv[opts->optind + 1];
     switch (type) {
     case UNDEFINED:
         opterror(opts, "invalid option -- '%c'", arg[0]);
         opts->optind++;
+        opts->optopt = arg[0];
         return '?';
     case NONE:
         opts->optarg = NULL;
@@ -62,6 +64,7 @@ int optparse(struct optparse *opts, const char *spec)
         } else {
             opterror(opts, "option requires an argument -- '%c'", arg[0]);
             opts->optarg = NULL;
+            opts->optopt = arg[0];
             return '?';
         }
         return arg[0];
