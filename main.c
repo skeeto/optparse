@@ -50,11 +50,12 @@ void try_optparse_long(int argc, char **argv)
         {"delay", 'd', OPTPARSE_OPTIONAL},
         {0}
     };
-    int opt;
-    while ((opt = optparse_long(&options, longopts, NULL)) != -1) {
+    int opt, longindex;
+    while ((opt = optparse_long(&options, longopts, &longindex)) != -1) {
         if (opt == '?')
             printf("%s: %s\n", argv[0], options.errmsg);
-        printf("%c (%d) = '%s'\n", opt, options.optind, options.optarg);
+        printf("%c (%d, %d) = '%s'\n",
+               opt, options.optind, longindex, options.optarg);
     }
     printf("optind = %d\n", options.optind);
     char *arg;

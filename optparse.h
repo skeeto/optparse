@@ -34,6 +34,9 @@
  * it could be a nearly drop-in replacement. The optstring is the same
  * and the fields have the same names as the getopt() global variables
  * (optarg, optind, optopt).
+ *
+ * Optparse also supports GNU-style long options with optparse_long().
+ * The interface is slightly different and simpler than getopt_long().
  */
 
 struct optparse {
@@ -72,6 +75,9 @@ int optparse(struct optparse *options, const char *optstring);
 
 /**
  * Handles GNU-style long options in addition to getopt() options.
+ * This works a lot like GNU's getopt_long(). The last option in
+ * longopts must be all zeros, marking the end of the array. The
+ * longindex argument may be NULL.
  */
 int
 optparse_long(struct optparse *options,
