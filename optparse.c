@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include "optparse.h"
 
-void optparse_init(struct optparse *opts, int argc, char **argv)
+void optparse_init(struct optparse *options, int argc, char **argv)
 {
-    opts->argc = argc;
-    opts->argv = argv;
-    opts->optind = 1;
-    opts->subopt = 0;
-    opts->optarg = NULL;
-    opts->errmsg[0] = '\0';
+    options->argc = argc;
+    options->argv = argv;
+    options->optind = 1;
+    options->subopt = 0;
+    options->optarg = NULL;
+    options->errmsg[0] = '\0';
 }
 
 static enum optparse_argtype
@@ -25,73 +25,73 @@ argtype(const char *optstring, char c)
     return count;
 }
 
-#define opterror(opts, format, args...)                         \
-    snprintf(opts->errmsg, sizeof(opts->errmsg), format, args);
+#define opterror(options, format, args...)                              \
+    snprintf(options->errmsg, sizeof(options->errmsg), format, args);
 
-int optparse(struct optparse *opts, const char *optstring)
+int optparse(struct optparse *options, const char *optstring)
 {
-    opts->errmsg[0] = '\0';
-    opts->optopt = 0;
-    char *arg = opts->argv[opts->optind];
-    if (arg == NULL || arg[0] != '-') {
+    options->errmsg[0] = '\0';
+    options->optopt = 0;
+    char *option = options->argv[options->optind];
+    if (option == NULL || option[0] != '-') {
         return -1;
-    } else if (arg[0] == '-' && arg[1] == '-' && arg[2] == '\0') {
-        opts->optind++; // consume "--" argument
+    } else if (option[0] == '-' && option[1] == '-' && option[2] == '\0') {
+        options->optind++; // consume "--" optionument
         return -1;
-    } else if (arg[1] == '-') {
+    } else if (option[1] == '-') {
         return -1;
     }
-    arg += opts->subopt + 1;
-    opts->optopt = arg[0];
-    int type = argtype(optstring, arg[0]);
-    char *next = opts->argv[opts->optind + 1];
+    option += options->subopt + 1;
+    options->optopt = option[0];
+    int type = argtype(optstring, option[0]);
+    char *next = options->argv[options->optind + 1];
     switch (type) {
     case -1:
-        opterror(opts, "invalid option -- '%c'", arg[0]);
-        opts->optind++;
+        opterror(options, "invalid option -- '%c'", option[0]);
+        options->optind++;
         return '?';
     case OPTPARSE_NONE:
-        opts->optarg = NULL;
-        if (arg[1]) {
-            opts->subopt++;
+        options->optarg = NULL;
+        if (option[1]) {
+            options->subopt++;
         } else {
-            opts->subopt = 0;
-            opts->optind++;
+            options->subopt = 0;
+            options->optind++;
         }
-        return arg[0];
+        return option[0];
     case OPTPARSE_REQUIRED:
-        opts->subopt = 0;
-        opts->optind++;
-        if (arg[1]) {
-            opts->optarg = arg + 1;
+        options->subopt = 0;
+        options->optind++;
+        if (option[1]) {
+            options->optarg = option + 1;
         } else if (next != NULL) {
-            opts->optarg = next;
-            opts->optind++;
+            options->optarg = next;
+            options->optind++;
         } else {
-            opterror(opts, "option requires an argument -- '%c'", arg[0]);
-            opts->optarg = NULL;
+            opterror(options, "option requires an argument -- '%c'", option[0]);
+            options->optarg = NULL;
             return '?';
         }
-        return arg[0];
+        return option[0];
     case OPTPARSE_OPTIONAL:
-        opts->subopt = 0;
-        opts->optind++;
-        if (arg[1])
-            opts->optarg = arg + 1;
+        options->subopt = 0;
+        options->optind++;
+        if (option[1])
+            options->optarg = option + 1;
         else
-            opts->optarg = NULL;
-        return arg[0];
+            options->optarg = NULL;
+        return option[0];
     }
     return 0;
 }
 
-char *optparse_arg(struct optparse *opts)
+char *optparse_arg(struct optparse *options)
 {
-    opts->subopt = 0;
-    char *arg = opts->argv[opts->optind];
-    if (arg != NULL)
-        opts->optind++;
-    return arg;
+    options->subopt = 0;
+    char *option = options->argv[options->optind];
+    if (option != NULL)
+        options->optind++;
+    return option;
 }
 
 static inline int
