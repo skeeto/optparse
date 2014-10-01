@@ -2,7 +2,7 @@
 #define OPTPARSE_H
 
 /**
- * Optparse -- portable, re-entrant, getopt()-like option parser
+ * Optparse -- portable, reentrant, getopt()-like option parser
  *
  * The POSIX getopt() option parser has three fatal flaws. These flaws
  * are solved by Optparse.

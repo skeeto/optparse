@@ -1,6 +1,6 @@
 # Optparse
 
-Optparse is a public domain, portable, re-entrant, getopt-like option
+Optparse is a public domain, portable, reentrant, getopt-like option
 parser. It's a single source and header file, so it can be trivially
 dropped into any project. It supports POSIX getopt optstrings,
 GNU-style long options, and subcommand processing.
