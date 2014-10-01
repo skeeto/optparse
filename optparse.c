@@ -33,8 +33,14 @@ int optparse(struct optparse *opts, const char *optstring)
     opts->errmsg[0] = '\0';
     opts->optopt = 0;
     char *arg = opts->argv[opts->optind];
-    if (arg == NULL || arg[0] != '-' || arg[1] == '-')
+    if (arg == NULL || arg[0] != '-') {
         return -1;
+    } else if (arg[0] == '-' && arg[1] == '-' && arg[2] == '\0') {
+        opts->optind++; // consume "--" argument
+        return -1;
+    } else if (arg[1] == '-') {
+        return -1;
+    }
     arg += opts->subopt + 1;
     opts->optopt = arg[0];
     int type = argtype(optstring, arg[0]);

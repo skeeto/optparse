@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
     char *long_argv[] = {
         "./main", "--amend", "-b", "--color", "red", "--delay",
-        "subcommand", "example.txt", NULL
+        "--", "subcommand", "example.txt", NULL
     };
     printf("\nOPTPARSE LONG\n");
     try_optparse_long(sizeof(long_argv) / sizeof(char *), long_argv);
