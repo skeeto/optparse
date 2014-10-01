@@ -10,13 +10,13 @@ GNU-style long options, and subcommand processing.
 The POSIX getopt option parser has three fatal flaws. These flaws are
 solved by Optparse.
 
-1) The getopt parser state is stored entirely in global variables,
+1. The getopt parser state is stored entirely in global variables,
 some of which are static and inaccessible. This means only one thread
 can use getopt. It also means it's not possible to recursively parse
 nested sub-arguments while in the middle of argument parsing. Optparse
 fixes this by storing all state on a local struct.
 
-2) The POSIX standard provides no way to properly reset the parser.
+2. The POSIX standard provides no way to properly reset the parser.
 For portable code this means getopt is only good for one run, over one
 argv with one optstring. It also means subcommand options cannot be
 reliably processed with getopt(). Most implementations provide an
@@ -28,7 +28,7 @@ itself could be passed around to subcommand handlers for additional
 subcommand option parsing. If a full parser reset is needed,
 `optparse_init()` can be called again.
 
-3) In getopt, error messages are printed to stderr. This can be
+3. In getopt, error messages are printed to stderr. This can be
 disabled with opterr, but the messages themselves are still
 inaccessible. Optparse solves this by writing the error message to its
 errmsg field, which can be printed to anywhere. The downside to
