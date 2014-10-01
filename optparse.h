@@ -46,6 +46,14 @@ struct optparse {
     int subopt;
 };
 
+enum optparse_argtype { OPTPARSE_NONE, OPTPARSE_REQUIRED, OPTPARSE_OPTIONAL };
+
+struct optparse_long {
+    const char *longname;
+    int shortname;
+    enum optparse_argtype argtype;
+};
+
 /**
  * Initializes the parser state.
  */
@@ -61,6 +69,14 @@ void optparse_init(struct optparse *options, int argc, char **argv);
  * colons means the option takes an optional argument.
  */
 int optparse(struct optparse *options, const char *optstring);
+
+/**
+ * Handles GNU-style long options in addition to getopt() options.
+ */
+int
+optparse_long(struct optparse *options,
+              const struct optparse_long *longopts,
+              int *longindex);
 
 /**
  * Used for stepping over non-option arguments.
