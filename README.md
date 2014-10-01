@@ -19,7 +19,7 @@ fixes this by storing all state on a local struct.
 2. The POSIX standard provides no way to properly reset the parser.
 For portable code this means getopt is only good for one run, over one
 argv with one optstring. It also means subcommand options cannot be
-reliably processed with getopt(). Most implementations provide an
+reliably processed with getopt. Most implementations provide an
 implementation-specific method to reset the parser, but this is not
 portable. Optparse provides an `optparse_arg()` function for stepping
 through non-option arguments, and parsing of options can continue
