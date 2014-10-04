@@ -157,6 +157,8 @@ optparse_long(struct optparse *options,
               int *longindex)
 {
     char *option = options->argv[options->optind];
+    if (option == NULL)
+        return -1;
     if (options->subopt > 0 || !is_longopt(option)) {
         /* Fallback to simple parser. */
         char optstring[optstring_length(longopts)];
