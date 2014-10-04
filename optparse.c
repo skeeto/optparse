@@ -32,6 +32,7 @@ int optparse(struct optparse *options, const char *optstring)
 {
     options->errmsg[0] = '\0';
     options->optopt = 0;
+    options->optarg = NULL;
     char *option = options->argv[options->optind];
     if (option == NULL || option[0] != '-') {
         return -1;
@@ -51,7 +52,6 @@ int optparse(struct optparse *options, const char *optstring)
         options->optind++;
         return '?';
     case OPTPARSE_NONE:
-        options->optarg = NULL;
         if (option[1]) {
             options->subopt++;
         } else {
@@ -151,6 +151,24 @@ longopts_arg(const char *option)
         return NULL;
 }
 
+static int
+long_fallback(struct optparse *options,
+              const struct optparse_long *longopts,
+              int *longindex)
+{
+    char optstring[optstring_length(longopts)];
+    optstring_from_long(longopts, optstring);
+    int result = optparse(options, optstring);
+    if (longindex != NULL) {
+        *longindex = -1;
+        if (result != -1)
+            for (int i = 0; !longopts_end(longopts, i); i++)
+                if (longopts[i].shortname == options->optopt)
+                    *longindex = i;
+    }
+    return result;
+}
+
 int
 optparse_long(struct optparse *options,
               const struct optparse_long *longopts,
@@ -159,20 +177,8 @@ optparse_long(struct optparse *options,
     char *option = options->argv[options->optind];
     if (option == NULL)
         return -1;
-    if (options->subopt > 0 || !is_longopt(option)) {
-        /* Fallback to simple parser. */
-        char optstring[optstring_length(longopts)];
-        optstring_from_long(longopts, optstring);
-        int result = optparse(options, optstring);
-        if (longindex != NULL) {
-            *longindex = -1;
-            if (result != -1)
-                for (int i = 0; !longopts_end(longopts, i); i++)
-                    if (longopts[i].shortname == options->optopt)
-                        *longindex = i;
-        }
-        return result;
-    }
+    if (options->subopt > 0 || !is_longopt(option))
+        return long_fallback(options, longopts, longindex);
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = NULL;
