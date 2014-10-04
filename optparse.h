@@ -2,7 +2,7 @@
 #define OPTPARSE_H
 
 /**
- * Optparse -- portable, reentrant, getopt()-like option parser
+ * Optparse -- portable, reentrant, embeddable, getopt-like option parser
  *
  * The POSIX getopt() option parser has three fatal flaws. These flaws
  * are solved by Optparse.
@@ -37,6 +37,10 @@
  *
  * Optparse also supports GNU-style long options with optparse_long().
  * The interface is slightly different and simpler than getopt_long().
+ *
+ * By default, argv is permuted as it is parsed, moving non-option
+ * arguments to the end. This can be disabled by setting the `permute`
+ * field to 0 after initialization.
  */
 
 struct optparse {

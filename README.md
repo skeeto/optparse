@@ -1,9 +1,10 @@
 # Optparse
 
-Optparse is a public domain, portable, reentrant, getopt-like option
-parser. It's a single source and header file, so it can be trivially
-dropped into any project. It supports POSIX getopt optstrings,
-GNU-style long options, and subcommand processing.
+Optparse is a public domain, portable, reentrant, embeddable,
+getopt-like option parser. It's a single source and header file, so it
+can be trivially dropped into any project. It supports POSIX getopt
+optstrings, GNU-style long options, argument permutation, and
+subcommand processing.
 
 ## Why not getopt?
 
@@ -34,6 +35,12 @@ inaccessible. Optparse solves this by writing the error message to its
 errmsg field, which can be printed to anywhere. The downside to
 Optparse is that this error message will always be in English rather
 than the current locale.
+
+## Permutation
+
+By default, argv is permuted as it is parsed, moving non-option
+arguments to the end of the array. This can be disabled by setting the
+`permute` field to 0 after initialization.
 
 ## Drop-in Replacement
 
