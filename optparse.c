@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "optparse.h"
 
+#define opterror(options, format, args...) \
+    snprintf(options->errmsg, sizeof(options->errmsg), format, args);
+
 void optparse_init(struct optparse *options, int argc, char **argv)
 {
     options->argc = argc;
@@ -9,6 +12,30 @@ void optparse_init(struct optparse *options, int argc, char **argv)
     options->subopt = 0;
     options->optarg = NULL;
     options->errmsg[0] = '\0';
+}
+
+static inline int
+is_dashdash(const char *arg)
+{
+    return arg != NULL && arg[0] == '-' && arg[1] == '-' && arg[2] == '\0';
+}
+
+static inline int
+is_hardstop(const char *arg)
+{
+    return arg == NULL || is_dashdash(arg);
+}
+
+static inline int
+is_shortopt(const char *arg)
+{
+    return arg != NULL && arg[0] == '-' && arg[1] != '-' && arg[1] != '\0';
+}
+
+static inline int
+is_longopt(const char *arg)
+{
+    return arg != NULL && arg[0] == '-' && arg[1] == '-' && arg[2] != '\0';
 }
 
 static enum optparse_argtype
@@ -25,21 +52,16 @@ argtype(const char *optstring, char c)
     return count;
 }
 
-#define opterror(options, format, args...)                              \
-    snprintf(options->errmsg, sizeof(options->errmsg), format, args);
-
 int optparse(struct optparse *options, const char *optstring)
 {
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = NULL;
     char *option = options->argv[options->optind];
-    if (option == NULL || option[0] != '-') {
+    if (is_dashdash(option)) {
+        options->optind++; // consume "--"
         return -1;
-    } else if (option[0] == '-' && option[1] == '-' && option[2] == '\0') {
-        options->optind++; // consume "--" argument
-        return -1;
-    } else if (option[1] == '-') {
+    } else if (!is_shortopt(option)) {
         return -1;
     }
     option += options->subopt + 1;
@@ -123,12 +145,7 @@ optstring_from_long(const struct optparse_long *longopts, char *optstring)
     *p = '\0';
 }
 
-static inline int
-is_longopt(const char *arg)
-{
-    return arg[0] == '-' && arg[1] == '-' && arg[2] != '\0';
-}
-
+/* Unlike strcmp(), handles options containing "=". */
 static int
 longopts_match(const char *longname, const char *option)
 {
@@ -141,6 +158,7 @@ longopts_match(const char *longname, const char *option)
     return *n == '\0' && (*a == '\0' || *a == '=');
 }
 
+/* Return the part after "=", or NULL. */
 static const char *
 longopts_arg(const char *option)
 {
