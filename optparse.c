@@ -4,10 +4,10 @@
 #define opterror(options, format, args...) \
     snprintf(options->errmsg, sizeof(options->errmsg), format, args);
 
-void optparse_init(struct optparse *options, int argc, char **argv)
+void optparse_init(struct optparse *options, char **argv)
 {
-    options->argc = argc;
     options->argv = argv;
+    options->permute = 1;
     options->optind = 1;
     options->subopt = 0;
     options->optarg = NULL;
@@ -21,12 +21,6 @@ is_dashdash(const char *arg)
 }
 
 static inline int
-is_hardstop(const char *arg)
-{
-    return arg == NULL || is_dashdash(arg);
-}
-
-static inline int
 is_shortopt(const char *arg)
 {
     return arg != NULL && arg[0] == '-' && arg[1] != '-' && arg[1] != '\0';
@@ -36,6 +30,15 @@ static inline int
 is_longopt(const char *arg)
 {
     return arg != NULL && arg[0] == '-' && arg[1] == '-' && arg[2] != '\0';
+}
+
+static void
+permute(struct optparse *options, int index)
+{
+    char *nonoption = options->argv[index];
+    for (int i = index; i < options->optind - 1; i++)
+        options->argv[i] = options->argv[i + 1];
+    options->argv[options->optind - 1] = nonoption;
 }
 
 static enum optparse_argtype
@@ -58,11 +61,22 @@ int optparse(struct optparse *options, const char *optstring)
     options->optopt = 0;
     options->optarg = NULL;
     char *option = options->argv[options->optind];
-    if (is_dashdash(option)) {
+    if (option == NULL) {
+        return -1;
+    } else if (is_dashdash(option)) {
         options->optind++; // consume "--"
         return -1;
     } else if (!is_shortopt(option)) {
-        return -1;
+        if (options->permute) {
+            int index = options->optind;
+            options->optind++;
+            int r = optparse(options, optstring);
+            permute(options, index);
+            options->optind--;
+            return r;
+        } else {
+            return -1;
+        }
     }
     option += options->subopt + 1;
     options->optopt = option[0];
@@ -193,10 +207,24 @@ optparse_long(struct optparse *options,
               int *longindex)
 {
     char *option = options->argv[options->optind];
-    if (option == NULL)
+    if (option == NULL) {
         return -1;
-    if (options->subopt > 0 || !is_longopt(option))
+    } else if (is_shortopt(option)) {
         return long_fallback(options, longopts, longindex);
+    } else if (!is_longopt(option)) {
+        if (options->permute) {
+            int index = options->optind;
+            options->optind++;
+            int r = optparse_long(options, longopts, longindex);
+            permute(options, index);
+            options->optind--;
+            return r;
+        } else {
+            return -1;
+        }
+    }
+
+    /* Parse as long option. */
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = NULL;
