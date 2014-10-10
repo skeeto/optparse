@@ -140,8 +140,8 @@ static size_t
 optstring_length(const struct optparse_long *longopts)
 {
     int length = 0;
-    for (; !longopts_end(longopts, length); length++)
-        length += longopts[length].argtype;
+    for (int i = 0; !longopts_end(longopts, i); i++, length++)
+        length += longopts[i].argtype;
     return length + 1;
 }
 
