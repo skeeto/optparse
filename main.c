@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     try_optparse(argv_copy);
 
     char *long_argv[] = {
-        "./main", "--amend", "-b", "--color", "red", "--delay",
+        "./main", "--amend", "-b", "--color", "red", "--delay=22",
         "subcommand", "example.txt", "--amend", NULL
     };
     printf("\nOPTPARSE LONG\n");
