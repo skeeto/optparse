@@ -116,7 +116,7 @@ int main(int argc, char **argv)
     int delay = 0;
 
     struct optparse options;
-    optparse_init(&options, argc, argv);
+    optparse_init(&options, argv);
     int option;
     while ((option = optparse(&options, "abc:d::")) != -1) {
         switch (option) {
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
     int delay = 0;
 
     struct optparse options;
-    optparse_init(&options, argc, argv);
+    optparse_init(&options, argv);
     struct optparse_long longopts[] = {
         {"amend", 'a', OPTPARSE_NONE},
         {"brief", 'b', OPTPARSE_NONE},
