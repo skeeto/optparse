@@ -183,7 +183,7 @@ int main(int argc, char **argv)
             color = optarg;
             break;
         case 'd':
-            delay = optarg ? atoi(optarg) : 1;
+            delay = optarg ? atoi(options.optarg) : 1;
             break;
         case '?':
             fprintf(stderr, "%s: %s\n", argv[0], options.errmsg);
