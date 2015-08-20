@@ -53,7 +53,7 @@ struct optparse {
     int subopt;
 };
 
-enum optparse_argtype { OPTPARSE_NONE, OPTPARSE_REQUIRED, OPTPARSE_OPTIONAL };
+enum optparse_argtype { OPTPARSE_INVALID = -1, OPTPARSE_NONE, OPTPARSE_REQUIRED, OPTPARSE_OPTIONAL };
 
 struct optparse_long {
     const char *longname;

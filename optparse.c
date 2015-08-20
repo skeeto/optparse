@@ -45,13 +45,13 @@ static enum optparse_argtype
 argtype(const char *optstring, char c)
 {
     if (c == ':')
-        return -1;
+        return OPTPARSE_INVALID;
     for (; *optstring && c != *optstring; optstring++);
     if (!*optstring)
-        return -1;
+        return OPTPARSE_INVALID;
     enum optparse_argtype count = OPTPARSE_NONE;
     if (optstring[1] == ':')
-        count += optstring[2] == ':' ? 2 : 1;
+        count = optstring[2] == ':' ? OPTPARSE_OPTIONAL : OPTPARSE_REQUIRED;
     return count;
 }
 
