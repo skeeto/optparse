@@ -71,7 +71,7 @@ void optparse_init(struct optparse *options, char **argv);
  * @param optstring a getopt()-formatted option string.
  * @return the next option character, -1 for done, or '?' for error
  *
- * Just like getopt(), a character followed by a colon means no
+ * Just like getopt(), a character followed by no colons means no
  * argument. One colon means the option has a required argument. Two
  * colons means the option takes an optional argument.
  */
