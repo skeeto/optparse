@@ -41,7 +41,7 @@ permute(struct optparse *options, int index)
     options->argv[options->optind - 1] = nonoption;
 }
 
-static enum optparse_argtype
+static int
 argtype(const char *optstring, char c)
 {
     if (c == ':')
@@ -49,7 +49,7 @@ argtype(const char *optstring, char c)
     for (; *optstring && c != *optstring; optstring++);
     if (!*optstring)
         return -1;
-    enum optparse_argtype count = OPTPARSE_NONE;
+    int count = OPTPARSE_NONE;
     if (optstring[1] == ':')
         count += optstring[2] == ':' ? 2 : 1;
     return count;
