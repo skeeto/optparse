@@ -173,8 +173,8 @@ longopts_match(const char *longname, const char *option)
 }
 
 /* Return the part after "=", or NULL. */
-static const char *
-longopts_arg(const char *option)
+static char *
+longopts_arg(char *option)
 {
     for (; *option && *option != '='; option++);
     if (*option == '=')
@@ -236,7 +236,7 @@ optparse_long(struct optparse *options,
             if (longindex)
                 *longindex = i;
             options->optopt = longopts[i].shortname;
-            const char *arg = longopts_arg(option);
+            char *arg = longopts_arg(option);
             if (longopts[i].argtype == OPTPARSE_NONE && arg != NULL) {
                 opterror(options, "option takes no arguments -- '%s'", name);
                 return '?';
