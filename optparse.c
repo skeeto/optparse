@@ -13,7 +13,7 @@ opterror(struct optparse *options, const char *message, const char *data)
         options->errmsg[p++] = *message++;
     while (*sep)
         options->errmsg[p++] = *sep++;
-    while (p < sizeof(options->errmsg) - 1 && *data)
+    while (p < sizeof(options->errmsg) - 2 && *data)
         options->errmsg[p++] = *data++;
     options->errmsg[p++] = '\'';
     options->errmsg[p++] = '\0';
