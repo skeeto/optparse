@@ -80,7 +80,7 @@ int optparse(struct optparse *options, const char *optstring)
     if (option == 0) {
         return -1;
     } else if (is_dashdash(option)) {
-        options->optind++; // consume "--"
+        options->optind++; /* consume "--" */
         return -1;
     } else if (!is_shortopt(option)) {
         if (options->permute) {
@@ -245,7 +245,7 @@ optparse_long(struct optparse *options,
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = 0;
-    option += 2; // skip "--"
+    option += 2; /* skip "--" */
     options->optind++;
     for (int i = 0; !longopts_end(longopts, i); i++) {
         const char *name = longopts[i].longname;
