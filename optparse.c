@@ -8,9 +8,9 @@ static int
 opterror(struct optparse *options, const char *message, const char *data)
 {
     unsigned p = 0;
+    const char *sep = " -- '";
     while (*message)
         options->errmsg[p++] = *message++;
-    const char *sep = " -- '";
     while (*sep)
         options->errmsg[p++] = *sep++;
     while (p < sizeof(options->errmsg) - 1 && *data)
@@ -30,19 +30,19 @@ void optparse_init(struct optparse *options, char **argv)
     options->errmsg[0] = '\0';
 }
 
-static inline int
+static int
 is_dashdash(const char *arg)
 {
     return arg != 0 && arg[0] == '-' && arg[1] == '-' && arg[2] == '\0';
 }
 
-static inline int
+static int
 is_shortopt(const char *arg)
 {
     return arg != 0 && arg[0] == '-' && arg[1] != '-' && arg[1] != '\0';
 }
 
-static inline int
+static int
 is_longopt(const char *arg)
 {
     return arg != 0 && arg[0] == '-' && arg[1] == '-' && arg[2] != '\0';
@@ -52,7 +52,8 @@ static void
 permute(struct optparse *options, int index)
 {
     char *nonoption = options->argv[index];
-    for (int i = index; i < options->optind - 1; i++)
+    int i;
+    for (i = index; i < options->optind - 1; i++)
         options->argv[i] = options->argv[i + 1];
     options->argv[options->optind - 1] = nonoption;
 }
@@ -60,12 +61,12 @@ permute(struct optparse *options, int index)
 static int
 argtype(const char *optstring, char c)
 {
+    int count = OPTPARSE_NONE;
     if (c == ':')
         return -1;
     for (; *optstring && c != *optstring; optstring++);
     if (!*optstring)
         return -1;
-    int count = OPTPARSE_NONE;
     if (optstring[1] == ':')
         count += optstring[2] == ':' ? 2 : 1;
     return count;
@@ -73,20 +74,22 @@ argtype(const char *optstring, char c)
 
 int optparse(struct optparse *options, const char *optstring)
 {
+    int type;
+    char *next;
+    char *option = options->argv[options->optind];
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = 0;
-    char *option = options->argv[options->optind];
     if (option == 0) {
         return -1;
     } else if (is_dashdash(option)) {
-        options->optind++; // consume "--"
+        options->optind++; /* consume "--" */
         return -1;
     } else if (!is_shortopt(option)) {
         if (options->permute) {
             int index = options->optind;
-            options->optind++;
             int r = optparse(options, optstring);
+            options->optind++;
             permute(options, index);
             options->optind--;
             return r;
@@ -96,12 +99,13 @@ int optparse(struct optparse *options, const char *optstring)
     }
     option += options->subopt + 1;
     options->optopt = option[0];
-    int type = argtype(optstring, option[0]);
-    char *next = options->argv[options->optind + 1];
+    type = argtype(optstring, option[0]);
+    next = options->argv[options->optind + 1];
     switch (type) {
     case -1: {
+        char str[2] = {0};
+        str[0] = option[0];
         options->optind++;
-        char str[] = {option[0]};
         return opterror(options, MSG_INVALID, str);
     }
     case OPTPARSE_NONE:
@@ -121,8 +125,9 @@ int optparse(struct optparse *options, const char *optstring)
             options->optarg = next;
             options->optind++;
         } else {
+            char str[2] = {0};
+            str[0] = option[0];
             options->optarg = 0;
-            char str[] = {option[0]};
             return opterror(options, MSG_MISSING, str);
         }
         return option[0];
@@ -140,36 +145,29 @@ int optparse(struct optparse *options, const char *optstring)
 
 char *optparse_arg(struct optparse *options)
 {
-    options->subopt = 0;
     char *option = options->argv[options->optind];
+    options->subopt = 0;
     if (option != 0)
         options->optind++;
     return option;
 }
 
-static inline int
+static int
 longopts_end(const struct optparse_long *longopts, int i)
 {
     return !longopts[i].longname && !longopts[i].shortname;
-}
-
-static unsigned
-optstring_length(const struct optparse_long *longopts)
-{
-    unsigned length = 0;
-    for (int i = 0; !longopts_end(longopts, i); i++, length++)
-        length += longopts[i].argtype;
-    return length + 1;
 }
 
 static void
 optstring_from_long(const struct optparse_long *longopts, char *optstring)
 {
     char *p = optstring;
-    for (int i = 0; !longopts_end(longopts, i); i++) {
+    int i;
+    for (i = 0; !longopts_end(longopts, i); i++) {
         if (longopts[i].shortname) {
+            int a;
             *p++ = longopts[i].shortname;
-            for (int a = 0; a < (int)longopts[i].argtype; a++)
+            for (a = 0; a < (int)longopts[i].argtype; a++)
                 *p++ = ':';
         }
     }
@@ -180,9 +178,9 @@ optstring_from_long(const struct optparse_long *longopts, char *optstring)
 static int
 longopts_match(const char *longname, const char *option)
 {
+    const char *a = option, *n = longname;
     if (longname == 0)
         return 0;
-    const char *a = option, *n = longname;
     for (; *a && *n && *a != '='; a++, n++)
         if (*a != *n)
             return 0;
@@ -205,13 +203,15 @@ long_fallback(struct optparse *options,
               const struct optparse_long *longopts,
               int *longindex)
 {
-    char optstring[optstring_length(longopts)];
+    int result;
+    char optstring[1000];
     optstring_from_long(longopts, optstring);
-    int result = optparse(options, optstring);
+    result = optparse(options, optstring);
     if (longindex != 0) {
+        int i;
         *longindex = -1;
         if (result != -1)
-            for (int i = 0; !longopts_end(longopts, i); i++)
+            for (i = 0; !longopts_end(longopts, i); i++)
                 if (longopts[i].shortname == options->optopt)
                     *longindex = i;
     }
@@ -223,6 +223,7 @@ optparse_long(struct optparse *options,
               const struct optparse_long *longopts,
               int *longindex)
 {
+    int i;
     char *option = options->argv[options->optind];
     if (option == 0) {
         return -1;
@@ -231,8 +232,9 @@ optparse_long(struct optparse *options,
     } else if (!is_longopt(option)) {
         if (options->permute) {
             int index = options->optind;
+            int r;
             options->optind++;
-            int r = optparse_long(options, longopts, longindex);
+            r = optparse_long(options, longopts, longindex);
             permute(options, index);
             options->optind--;
             return r;
@@ -245,15 +247,16 @@ optparse_long(struct optparse *options,
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = 0;
-    option += 2; // skip "--"
+    option += 2; /* skip "--" */
     options->optind++;
-    for (int i = 0; !longopts_end(longopts, i); i++) {
+    for (i = 0; !longopts_end(longopts, i); i++) {
         const char *name = longopts[i].longname;
         if (longopts_match(name, option)) {
+            char *arg;
             if (longindex)
                 *longindex = i;
             options->optopt = longopts[i].shortname;
-            char *arg = longopts_arg(option);
+            arg = longopts_arg(option);
             if (longopts[i].argtype == OPTPARSE_NONE && arg != 0) {
                 return opterror(options, MSG_TOOMANY, name);
             } if (arg != 0) {

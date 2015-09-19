@@ -1,4 +1,4 @@
-CFLAGS = -std=c99 -Wall -Wextra -g3
+CFLAGS = -ansi -pedantic -Wall -Wextra -g3
 
 main : main.o optparse.o
 
