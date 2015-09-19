@@ -49,7 +49,7 @@ struct optparse {
     int optind;
     int optopt;
     char *optarg;
-    char errmsg[48];
+    char errmsg[64];
     int subopt;
 };
 
