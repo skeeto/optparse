@@ -153,15 +153,6 @@ longopts_end(const struct optparse_long *longopts, int i)
     return !longopts[i].longname && !longopts[i].shortname;
 }
 
-static unsigned
-optstring_length(const struct optparse_long *longopts)
-{
-    unsigned length = 0;
-    for (int i = 0; !longopts_end(longopts, i); i++, length++)
-        length += longopts[i].argtype;
-    return length + 1;
-}
-
 static void
 optstring_from_long(const struct optparse_long *longopts, char *optstring)
 {
@@ -205,7 +196,7 @@ long_fallback(struct optparse *options,
               const struct optparse_long *longopts,
               int *longindex)
 {
-    char optstring[optstring_length(longopts)];
+    char optstring[96 * 3 + 1]; /* 96 ASCII printable characters */
     optstring_from_long(longopts, optstring);
     int result = optparse(options, optstring);
     if (longindex != 0) {
