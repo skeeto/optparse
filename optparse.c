@@ -152,7 +152,7 @@ optstring_from_long(const struct optparse_long *longopts, char *optstring)
     for (int i = 0; !longopts_end(longopts, i); i++) {
         if (longopts[i].shortname) {
             *p++ = longopts[i].shortname;
-            for (int a = 0; a < longopts[i].argtype; a++)
+            for (int a = 0; a < (int)longopts[i].argtype; a++)
                 *p++ = ':';
         }
     }
