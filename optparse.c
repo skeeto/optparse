@@ -99,9 +99,11 @@ int optparse(struct optparse *options, const char *optstring)
     int type = argtype(optstring, option[0]);
     char *next = options->argv[options->optind + 1];
     switch (type) {
-    case -1:
+    case -1: {
         options->optind++;
-        return opterror(options, MSG_INVALID, (char[2]){option[0]});
+        char str[] = {option[0]};
+        return opterror(options, MSG_INVALID, str);
+    }
     case OPTPARSE_NONE:
         if (option[1]) {
             options->subopt++;
@@ -120,7 +122,8 @@ int optparse(struct optparse *options, const char *optstring)
             options->optind++;
         } else {
             options->optarg = 0;
-            return opterror(options, MSG_MISSING, (char[2]){option[0]});
+            char str[] = {option[0]};
+            return opterror(options, MSG_MISSING, str);
         }
         return option[0];
     case OPTPARSE_OPTIONAL:
