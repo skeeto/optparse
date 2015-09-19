@@ -52,7 +52,9 @@ global variables (optarg, optind, optopt).
 The long option parser `optparse_long()` API is very similar to GNU's
 `getopt_long()` and can serve as a portable, embedded replacement.
 
-Optparse does not do any heap allocation, so no cleanup is needed.
+Optparse does not allocate, so no cleanup is needed. Furthermore,
+Optparse has no dependencies, including libc itself, so it can be used
+in situations where the standard C library cannot.
 
 See `optparse.h` for full API documentation.
 

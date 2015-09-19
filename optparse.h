@@ -48,8 +48,8 @@ struct optparse {
     int permute;
     int optind;
     int optopt;
-    const char *optarg;
-    char errmsg[48];
+    char *optarg;
+    char errmsg[64];
     int subopt;
 };
 
