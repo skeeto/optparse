@@ -88,8 +88,9 @@ int optparse(struct optparse *options, const char *optstring)
     } else if (!is_shortopt(option)) {
         if (options->permute) {
             int index = options->optind;
-            int r = optparse(options, optstring);
+            int r;
             options->optind++;
+            r = optparse(options, optstring);
             permute(options, index);
             options->optind--;
             return r;
