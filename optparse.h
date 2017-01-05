@@ -90,7 +90,7 @@ optparse_long(struct optparse *options,
 
 /**
  * Used for stepping over non-option arguments.
- * @return the next non-option argument, or -1 for no more arguments
+ * @return the next non-option argument, or NULL for no more arguments
  *
  * Argument parsing can continue with optparse() after using this
  * function. That would be used to parse the options for the
