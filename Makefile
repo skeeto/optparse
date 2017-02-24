@@ -1,12 +1,10 @@
-CFLAGS = -std=c99 -Wall -Wextra -g3
+CFLAGS = -ansi -pedantic -Wall -Wextra -g3
 
-main : main.o optparse.o
-
-main.o : main.c optparse.h
-optparse.o : optparse.c optparse.h
+main : main.c optparse.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ main.c $(LDLIBS)
 
 run : main
 	./$^ -abdfoo -c bar subcommand example.txt -a
 
 clean :
-	$(RM) test *.o
+	rm -f main

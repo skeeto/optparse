@@ -1,12 +1,28 @@
 # Optparse
 
 Optparse is a public domain, portable, reentrant, embeddable,
-getopt-like option parser. It's a single source and header file, so it
-can be trivially dropped into any project. It supports POSIX getopt
-optstrings, GNU-style long options, argument permutation, and
-subcommand processing.
+getopt-like option parser. It's a single header file and can be
+trivially dropped into any project. It supports POSIX getopt option
+strings, GNU-style long options, argument permutation, and subcommand
+processing.
 
-## Why not getopt?
+To get the implementation, define `OPTPARSE_IMPLEMENTATION` before
+including `optparse.h`.
+
+~~~c
+#define OPTPARSE_IMPLEMENTATION
+#include "optparse.h"
+~~~
+
+Optionally define `OPTPARSE_API` to control the API's visibility
+and/or linkage (`static`, `__attribute__`, `__declspec`).
+
+~~~c
+#define OPTPARSE_API static
+#include "optparse.h"
+~~~
+
+## Why not getopt()?
 
 The POSIX getopt option parser has three fatal flaws. These flaws are
 solved by Optparse.
@@ -19,12 +35,12 @@ fixes this by storing all state on a local struct.
 
 2. The POSIX standard provides no way to properly reset the parser.
 For portable code this means getopt is only good for one run, over one
-argv with one optstring. It also means subcommand options cannot be
-reliably processed with getopt. Most implementations provide an
+argv with one option string. It also means subcommand options cannot
+be reliably processed with getopt. Most implementations provide an
 implementation-specific method to reset the parser, but this is not
 portable. Optparse provides an `optparse_arg()` function for stepping
 through non-option arguments, and parsing of options can continue
-again at any time with a different optstring. The Optparse struct
+again at any time with a different option string. The Optparse struct
 itself could be passed around to subcommand handlers for additional
 subcommand option parsing. If a full parser reset is needed,
 `optparse_init()` can be called again.
@@ -42,19 +58,25 @@ By default, argv is permuted as it is parsed, moving non-option
 arguments to the end of the array. This can be disabled by setting the
 `permute` field to 0 after initialization.
 
+~~~c
+struct optparse options;
+optparse_init(&options, argv);
+options.permute = 0;
+~~~
+
 ## Drop-in Replacement
 
 Optparse's interface should be familiar with anyone accustomed to
-getopt. It's nearly a drop-in replacement. The optstring has the same
-format and the parser struct fields have the same names as the getopt
-global variables (optarg, optind, optopt).
+getopt. It's nearly a drop-in replacement. The option string has the
+same format and the parser struct fields have the same names as the
+getopt global variables (optarg, optind, optopt).
 
 The long option parser `optparse_long()` API is very similar to GNU's
 `getopt_long()` and can serve as a portable, embedded replacement.
 
-Optparse does not allocate, so no cleanup is needed. Furthermore,
-Optparse has no dependencies, including libc itself, so it can be used
-in situations where the standard C library cannot.
+Optparse does not allocate memory. Furthermore, Optparse has no
+dependencies, including libc itself, so it can be used in situations
+where the standard C library cannot.
 
 See `optparse.h` for full API documentation.
 
