@@ -140,8 +140,10 @@ int main(int argc, char **argv)
     bool brief = false;
     const char *color = "white";
     int delay = 0;
-    struct optparse options;
+
+    char *arg;
     int option;
+    struct optparse options;
 
     optparse_init(&options, argv);
     while ((option = optparse(&options, "abc:d::")) != -1) {
@@ -165,7 +167,6 @@ int main(int argc, char **argv)
     }
 
     /* Print remaining arguments. */
-    char *arg;
     while ((arg = optparse_arg(&options)))
         printf("%s\n", arg);
     return 0;
@@ -184,11 +185,6 @@ And here's a conversion to long options.
 
 int main(int argc, char **argv)
 {
-    bool amend = false;
-    bool brief = false;
-    const char *color = "white";
-    int delay = 0;
-    struct optparse options;
     struct optparse_long longopts[] = {
         {"amend", 'a', OPTPARSE_NONE},
         {"brief", 'b', OPTPARSE_NONE},
@@ -196,7 +192,15 @@ int main(int argc, char **argv)
         {"delay", 'd', OPTPARSE_OPTIONAL},
         {0}
     };
+
+    bool amend = false;
+    bool brief = false;
+    const char *color = "white";
+    int delay = 0;
+
+    char *arg;
     int option;
+    struct optparse options;
 
     optparse_init(&options, argv);
     while ((option = optparse_long(&options, longopts, NULL)) != -1) {
@@ -220,11 +224,8 @@ int main(int argc, char **argv)
     }
 
     /* Print remaining arguments. */
-    {
-        char *arg;
-        while ((arg = optparse_arg(&options)))
-            printf("%s\n", arg);
-    }
+    while ((arg = optparse_arg(&options)))
+        printf("%s\n", arg);
 
     return 0;
 }
