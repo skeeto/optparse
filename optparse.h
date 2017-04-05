@@ -1,5 +1,7 @@
 /* Optparse --- portable, reentrant, embeddable, getopt-like option parser
  *
+ * Reference: https://github.com/skeeto/optparse   2017 April 5
+ *
  * This is free and unencumbered software released into the public domain.
  *
  * To get the implementation, define OPTPARSE_IMPLEMENTATION.
@@ -117,9 +119,10 @@ char *optparse_arg(struct optparse *options);
 /* Implementation */
 #ifdef OPTPARSE_IMPLEMENTATION
 
-#define OPTPARSE_MSG_INVALID "invalid option"
-#define OPTPARSE_MSG_MISSING "option requires an argument"
-#define OPTPARSE_MSG_TOOMANY "option takes no arguments"
+#define OPTPARSE_MSG_AMBIGUOUS "ambiguous option"
+#define OPTPARSE_MSG_INVALID   "invalid option"
+#define OPTPARSE_MSG_MISSING   "option requires an argument"
+#define OPTPARSE_MSG_TOOMANY   "option takes no arguments"
 
 static int
 optparse_error(struct optparse *options, const char *msg, const char *data)
@@ -306,7 +309,7 @@ optparse_longopts_match(const char *longname, const char *option)
     for (; *a && *n && *a != '='; a++, n++)
         if (*a != *n)
             return 0;
-    return *n == '\0' && (*a == '\0' || *a == '=');
+    return *a == '\0' || *a == '=';
 }
 
 /* Return the part after "=", or NULL. */
@@ -347,7 +350,7 @@ optparse_long(struct optparse *options,
               const struct optparse_long *longopts,
               int *longindex)
 {
-    int i;
+    int i, matched_idx;
     char *option = options->argv[options->optind];
     if (option == 0) {
         return -1;
@@ -374,25 +377,34 @@ optparse_long(struct optparse *options,
     options->optarg = 0;
     option += 2; /* skip "--" */
     options->optind++;
-    for (i = 0; !optparse_longopts_end(longopts, i); i++) {
-        const char *name = longopts[i].longname;
-        if (optparse_longopts_match(name, option)) {
-            char *arg;
-            if (longindex)
-                *longindex = i;
-            options->optopt = longopts[i].shortname;
-            arg = optparse_longopts_arg(option);
-            if (longopts[i].argtype == OPTPARSE_NONE && arg != 0) {
-                return optparse_error(options, OPTPARSE_MSG_TOOMANY, name);
-            } if (arg != 0) {
-                options->optarg = arg;
-            } else if (longopts[i].argtype == OPTPARSE_REQUIRED) {
-                options->optarg = options->argv[options->optind++];
-                if (options->optarg == 0)
-                    return optparse_error(options, OPTPARSE_MSG_MISSING, name);
-            }
-            return options->optopt;
+    matched_idx = -1;
+    for (i = 0; !optparse_longopts_end(longopts, i); i++)
+        if (optparse_longopts_match( longopts[i].longname, option)) {
+            if( matched_idx == -1)
+                matched_idx = i;
+            else
+                return optparse_error(options, OPTPARSE_MSG_AMBIGUOUS, option);
         }
+
+    if( matched_idx >= 0) {
+        char *arg;
+        const char *name = longopts[matched_idx].longname;
+
+        i = matched_idx;
+        if (longindex)
+            *longindex = i;
+        options->optopt = longopts[i].shortname;
+        arg = optparse_longopts_arg(option);
+        if (longopts[i].argtype == OPTPARSE_NONE && arg != 0) {
+            return optparse_error(options, OPTPARSE_MSG_TOOMANY, name);
+        } if (arg != 0) {
+            options->optarg = arg;
+        } else if (longopts[i].argtype == OPTPARSE_REQUIRED) {
+            options->optarg = options->argv[options->optind++];
+            if (options->optarg == 0)
+                return optparse_error(options, OPTPARSE_MSG_MISSING, name);
+        }
+        return options->optopt;
     }
     return optparse_error(options, OPTPARSE_MSG_INVALID, option);
 }
