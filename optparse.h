@@ -54,11 +54,11 @@
 #endif
 
 struct optparse {
-    char **argv;
+    const char **argv;
     int permute;
     int optind;
     int optopt;
-    char *optarg;
+    const char *optarg;
     char errmsg[64];
     int subopt;
 };
@@ -79,7 +79,7 @@ struct optparse_long {
  * Initializes the parser state.
  */
 OPTPARSE_API
-void optparse_init(struct optparse *options, char **argv);
+void optparse_init(struct optparse *options, const char **argv);
 
 /**
  * Read the next option in the argv array.
@@ -114,7 +114,7 @@ int optparse_long(struct optparse *options,
  * ignore the value of optind.
  */
 OPTPARSE_API
-char *optparse_arg(struct optparse *options);
+const char *optparse_arg(struct optparse *options);
 
 /* Implementation */
 #ifdef OPTPARSE_IMPLEMENTATION
@@ -142,7 +142,7 @@ optparse_error(struct optparse *options, const char *msg, const char *data)
 
 OPTPARSE_API
 void
-optparse_init(struct optparse *options, char **argv)
+optparse_init(struct optparse *options, const char **argv)
 {
     options->argv = argv;
     options->permute = 1;
@@ -171,9 +171,9 @@ optparse_is_longopt(const char *arg)
 }
 
 static void
-optparse_permute(struct optparse *options, int index)
+optparse_permute(struct optparse *options, const int index)
 {
-    char *nonoption = options->argv[index];
+    const char *nonoption = options->argv[index];
     int i;
     for (i = index; i < options->optind - 1; i++)
         options->argv[i] = options->argv[i + 1];
@@ -181,7 +181,7 @@ optparse_permute(struct optparse *options, int index)
 }
 
 static int
-optparse_argtype(const char *optstring, char c)
+optparse_argtype(const char *optstring, const char c)
 {
     int count = OPTPARSE_NONE;
     if (c == ':')
@@ -199,8 +199,8 @@ int
 optparse(struct optparse *options, const char *optstring)
 {
     int type;
-    char *next;
-    char *option = options->argv[options->optind];
+    const char *next;
+    const char *option = options->argv[options->optind];
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = 0;
@@ -267,10 +267,10 @@ optparse(struct optparse *options, const char *optstring)
 }
 
 OPTPARSE_API
-char *
+const char *
 optparse_arg(struct optparse *options)
 {
-    char *option = options->argv[options->optind];
+    const char *option = options->argv[options->optind];
     options->subopt = 0;
     if (option != 0)
         options->optind++;
@@ -278,7 +278,7 @@ optparse_arg(struct optparse *options)
 }
 
 static int
-optparse_longopts_end(const struct optparse_long *longopts, int i)
+optparse_longopts_end(const struct optparse_long *longopts, const int i)
 {
     return !longopts[i].longname && !longopts[i].shortname;
 }
@@ -313,8 +313,8 @@ optparse_longopts_match(const char *longname, const char *option)
 }
 
 /* Return the part after "=", or NULL. */
-static char *
-optparse_longopts_arg(char *option)
+static const char *
+optparse_longopts_arg(const char *option)
 {
     for (; *option && *option != '='; option++);
     if (*option == '=')
@@ -351,7 +351,7 @@ optparse_long(struct optparse *options,
               int *longindex)
 {
     int i, matched_idx;
-    char *option = options->argv[options->optind];
+    const char *option = options->argv[options->optind];
     if (option == 0) {
         return -1;
     } else if (optparse_is_dashdash(option)) {
@@ -387,7 +387,7 @@ optparse_long(struct optparse *options,
         }
 
     if( matched_idx >= 0) {
-        char *arg;
+        const char *arg;
         const char *name = longopts[matched_idx].longname;
 
         i = matched_idx;
