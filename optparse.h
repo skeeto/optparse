@@ -387,9 +387,11 @@ optparse_long(struct optparse *options,
             } if (arg != 0) {
                 options->optarg = arg;
             } else if (longopts[i].argtype == OPTPARSE_REQUIRED) {
-                options->optarg = options->argv[options->optind++];
+                options->optarg = options->argv[options->optind];
                 if (options->optarg == 0)
                     return optparse_error(options, OPTPARSE_MSG_MISSING, name);
+                else
+                    options->optind++;
             }
             return options->optopt;
         }
