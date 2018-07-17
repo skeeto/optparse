@@ -24,7 +24,7 @@ and/or linkage (`static`, `__attribute__`, `__declspec`).
 
 ## Why not getopt()?
 
-The POSIX getopt option parser has three fatal flaws. These flaws are
+The POSIX getopt option parser has four fatal flaws. These flaws are
 solved by Optparse.
 
 1. The getopt parser state is stored entirely in global variables,
@@ -51,6 +51,10 @@ inaccessible. Optparse solves this by writing the error message to its
 errmsg field, which can be printed to anywhere. The downside to
 Optparse is that this error message will always be in English rather
 than the current locale.
+
+4. It's for POSIX.  If you want to port your code to a non-POSIX
+platform,  you may (or may not) find a POSIX-style getopt.  You will
+definitely find Optparse.
 
 ## Permutation
 
