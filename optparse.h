@@ -44,6 +44,9 @@
  * arguments to the end. This can be disabled by setting the `permute`
  * field to 0 after initialization.
  */
+
+#ifndef OPTPARSE_IMPLEMENTATION
+
 #ifndef OPTPARSE_H
 #define OPTPARSE_H
 
@@ -107,6 +110,9 @@ int optparse_long(struct optparse *options,
                   const struct optparse_long *longopts,
                   int *longindex);
 
+/**
+ * Works a lot like GNU's getopt_long_only().
+*/
 OPTPARSE_API
 int optparse_long_only(struct optparse *options,
                   const struct optparse_long *longopts,
@@ -124,8 +130,10 @@ int optparse_long_only(struct optparse *options,
 OPTPARSE_API
 TCHAR *optparse_arg(struct optparse *options);
 
+#endif /* OPTPARSE_H */
+
+#else /* OPTPARSE_IMPLEMENTATION */
 /* Implementation */
-#ifdef OPTPARSE_IMPLEMENTATION
 
 #define OPTPARSE_MSG_INVALID _TEXT("invalid option")
 #define OPTPARSE_MSG_MISSING _TEXT("option requires an argument")
@@ -308,31 +316,25 @@ optparse_from_long(const struct optparse_long *longopts, TCHAR *optstring)
 }
 
 /* Unlike strcmp(), handles options containing "=". */
+/* is_exact_match is true if LCP(longname, option) == option */
 static int
-optparse_longopts_match(const TCHAR *longname, const TCHAR *option)
+optparse_longopts_match(const TCHAR *longname, const TCHAR *option, int *is_exact_match)
 {
+    *is_exact_match = 0;
     const TCHAR *a = option, *n = longname;
     if (longname == 0)
         return 0;
     for (; *a && *n && *a != '='; a++, n++)
         if (*a != *n)
             return 0;
-    return *n == '\0' && (*a == '\0' || *a == '=');
-}
-
-/* --prop == --property */
-/* Returns true if LCP(longname, option) == option */
-static int
-optparse_longopts_prefix_match(const TCHAR *longname, const TCHAR *option)
-{
-    const TCHAR *a = option, *n = longname;
-    if (longname == 0)
-        return 0;
-    for (; *a && *n && *a != '='; a++, n++)
-        if (*a != *n)
-            return 0;
-    // longname can be longer.
-    return *a == '\0';
+    if (*n == '\0' && (*a == '\0' || *a == '=')) {
+        *is_exact_match = 1;
+        return 1;
+    } if (*a == '\0' || *a == '=') {
+        // longname can be longer.
+        return 1;
+    }
+    return 0;
 }
 
 /* Return the part after "=", or NULL. */
@@ -372,14 +374,14 @@ parse_long_option(TCHAR *option,
     struct optparse *options,
     const struct optparse_long *longopts,
     int *longindex,
-    BOOL is_long_only)
+    int is_long_only)
 {
     int i;
-    int cMatchedOptions = 0;
+    int matched_options_count = 0;
     int last_matched_longopt_index = -1;
     const TCHAR *name = NULL;
     const TCHAR *last_matched_name = NULL;
-    /* Parse as long option. */
+
     options->errmsg[0] = _TEXT('\0');
     options->optopt = 0;
     options->optarg = 0;
@@ -392,25 +394,29 @@ parse_long_option(TCHAR *option,
     options->optind++;
 
     for (i = 0; !optparse_longopts_end(longopts, i); i++) {
+        int is_exact_match = 0;
         name = longopts[i].longname;
-        if (optparse_longopts_match(name, option)) {
+        if (!optparse_longopts_match(name, option, &is_exact_match)) {
+            continue;
+        }
+        if (is_exact_match) {
             // exact match
             last_matched_name = name;
             last_matched_longopt_index = i;
-            cMatchedOptions = 1;
+            matched_options_count = 1;
             break;
         }
-        else if (optparse_longopts_prefix_match(name, option)) {
+        else {
             // nonexact match
             last_matched_name = name;
             last_matched_longopt_index = i;
-            ++cMatchedOptions;
+            ++matched_options_count;
         }
     }
 
-    if (cMatchedOptions > 1) {
+    if (matched_options_count > 1) {
         return optparse_error(options, OPTPARSE_MSG_AMBIGUITY, name);
-    } if (cMatchedOptions) {
+    } if (matched_options_count) {
         i = last_matched_longopt_index;
         name = last_matched_name;
         TCHAR *arg;
@@ -461,7 +467,7 @@ optparse_long(struct optparse *options,
         }
     }
 
-    return parse_long_option(option, options, longopts, longindex, FALSE);
+    return parse_long_option(option, options, longopts, longindex, 0);
 }
 
 OPTPARSE_API
@@ -479,8 +485,7 @@ optparse_long_only(struct optparse *options,
         return -1;
     }
 
-    return parse_long_option(option, options, longopts, longindex, TRUE);
+    return parse_long_option(option, options, longopts, longindex, 1);
 }
 
 #endif /* OPTPARSE_IMPLEMENTATION */
-#endif /* OPTPARSE_H */
