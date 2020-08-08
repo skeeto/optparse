@@ -4,7 +4,7 @@ test : test.c optparse.h
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ test.c $(LDLIBS)
 
 run : test
-	./$< -abdfoo -c bar subcommand example.txt -a
+	./test -abdfoo -c bar subcommand example.txt -a
 
 clean :
 	rm -f test
