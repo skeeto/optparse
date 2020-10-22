@@ -286,7 +286,7 @@ optparse_from_long(const struct optparse_long *longopts, char *optstring)
     char *p = optstring;
     int i;
     for (i = 0; !optparse_longopts_end(longopts, i); i++) {
-        if (longopts[i].shortname) {
+        if (longopts[i].shortname && longopts[i].shortname < 127) {
             int a;
             *p++ = longopts[i].shortname;
             for (a = 0; a < (int)longopts[i].argtype; a++)

@@ -55,16 +55,20 @@ void try_optparse_long(char **argv)
         {"brief", 'b', OPTPARSE_NONE},
         {"color", 'c', OPTPARSE_REQUIRED},
         {"delay", 'd', OPTPARSE_OPTIONAL},
+        {"erase", 256, OPTPARSE_REQUIRED},
         {0, 0, 0}
     };
 
     print_argv(argv);
     optparse_init(&options, argv);
     while ((opt = optparse_long(&options, longopts, &longindex)) != -1) {
+        char buf[2] = {0, 0};
         if (opt == '?')
             printf("%s: %s\n", argv[0], options.errmsg);
-        printf("%c (%d, %d) = '%s'\n",
-               opt, options.optind, longindex, options.optarg);
+        buf[0] = opt;
+        printf("%-6s(%d, %d) = '%s'\n",
+               opt < 127 ? buf : longopts[longindex].longname,
+               options.optind, longindex, options.optarg);
     }
     printf("optind = %d\n", options.optind);
     while ((arg = optparse_arg(&options)))
@@ -75,7 +79,7 @@ int main(int argc, char **argv)
 {
     char *long_argv[] = {
         "./main", "--amend", "-b", "--color", "red", "--delay=22",
-        "subcommand", "example.txt", "--amend", NULL
+        "subcommand", "example.txt", "--amend", "--erase", "all", NULL
     };
     size_t size = (argc + 1) * sizeof(*argv);
     char **argv_copy = malloc(size);
