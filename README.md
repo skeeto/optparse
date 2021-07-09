@@ -167,7 +167,7 @@ int main(int argc, char **argv)
     }
 
     /* Print remaining arguments. */
-    while ((arg = optparse_arg(&options)))
+    while ((arg = optparse_arg(&options)) != NULL)
         printf("%s\n", arg);
     return 0;
 }
@@ -224,7 +224,7 @@ int main(int argc, char **argv)
     }
 
     /* Print remaining arguments. */
-    while ((arg = optparse_arg(&options)))
+    while ((arg = optparse_arg(&options)) != NULL)
         printf("%s\n", arg);
 
     return 0;

@@ -41,7 +41,7 @@ void try_optparse(char **argv)
         printf("%c (%d) = '%s'\n", opt, options.optind, options.optarg);
     }
     printf("optind = %d\n", options.optind);
-    while ((arg = optparse_arg(&options)))
+    while ((arg = optparse_arg(&options)) != NULL)
         printf("argument: %s\n", arg);
 }
 
@@ -71,7 +71,7 @@ void try_optparse_long(char **argv)
                options.optind, longindex, options.optarg);
     }
     printf("optind = %d\n", options.optind);
-    while ((arg = optparse_arg(&options)))
+    while ((arg = optparse_arg(&options)) != NULL)
         printf("argument: %s\n", arg);
 }
 
