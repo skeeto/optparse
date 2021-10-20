@@ -54,12 +54,12 @@
 #endif
 
 struct optparse {
+    char errmsg[64];
     const char **argv;
+    const char *optarg;
     int permute;
     int optind;
     int optopt;
-    const char *optarg;
-    char errmsg[64];
     int subopt;
 };
 
