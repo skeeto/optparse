@@ -7,7 +7,7 @@
 #include <string.h>
 #include <getopt.h>
 
-void print_argv(char **argv)
+void print_argv(const char **argv)
 {
     while (*argv)
         printf("%s ", *argv++);
@@ -18,7 +18,7 @@ void try_getopt(int argc, char **argv)
 {
     int opt;
 
-    print_argv(argv);
+    print_argv((const char **)argv);
     while ((opt = getopt(argc, argv, "abc:d::")) != -1) {
         printf("%c (%d) = '%s'\n", opt, optind, optarg);
     }
@@ -27,10 +27,10 @@ void try_getopt(int argc, char **argv)
         printf("argument: %s\n", argv[optind]);
 }
 
-void try_optparse(char **argv)
+void try_optparse( const char **argv)
 {
     int opt;
-    char *arg;
+    const char *arg;
     struct optparse options;
 
     print_argv(argv);
@@ -45,12 +45,12 @@ void try_optparse(char **argv)
         printf("argument: %s\n", arg);
 }
 
-void try_optparse_long(char **argv)
+void try_optparse_long( const char **argv)
 {
-    char *arg;
+    const char *arg;
     int opt, longindex;
     struct optparse options;
-    struct optparse_long longopts[] = {
+    const struct optparse_long longopts[] = {
         {"amend", 'a', OPTPARSE_NONE},
         {"brief", 'b', OPTPARSE_NONE},
         {"color", 'c', OPTPARSE_REQUIRED},
@@ -73,10 +73,12 @@ void try_optparse_long(char **argv)
 
 int main(int argc, char **argv)
 {
-    char *long_argv[] = {
+#ifdef EXAMPLE
+    const char *long_argv[] = {
         "./main", "--amend", "-b", "--color", "red", "--delay=22",
         "subcommand", "example.txt", "--amend", NULL
     };
+#endif
     size_t size = (argc + 1) * sizeof(*argv);
     char **argv_copy = malloc(size);
 
@@ -86,9 +88,10 @@ int main(int argc, char **argv)
 
     memcpy(argv_copy, argv, size);
     printf("\nOPTPARSE\n");
-    try_optparse(argv_copy);
+    try_optparse( (const char **)argv_copy);
 
+    memcpy(argv_copy, argv, size);
     printf("\nOPTPARSE LONG\n");
-    try_optparse_long(long_argv);
+    try_optparse_long( (const char **)argv_copy);
     return 0;
 }
