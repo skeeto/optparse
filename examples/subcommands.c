@@ -91,7 +91,7 @@ int main(int argc, const char **argv)
     (void)argc;
     optparse_init(&options, argv);
     options.permute = 0;
-    while ((option = optparse(&options, "hp")) != -1) {
+    while ((option = optparse(&options, "h")) != -1) {
         switch (option) {
         case 'h':
             usage(stdout);
