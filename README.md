@@ -1,10 +1,9 @@
 # Optparse
 
-Optparse is a public domain, portable, reentrant, embeddable,
-getopt-like option parser. It's a single header file and can be
-trivially dropped into any project. It supports POSIX getopt option
-strings, GNU-style long options, argument permutation, and subcommand
-processing.
+Optparse is a public domain, portable, reentrant, embeddable, getopt-like
+option parser. As a single header file, it's trivially dropped into any
+project. It supports POSIX getopt option strings, GNU-style long options,
+argument permutation, and subcommand processing.
 
 To get the implementation, define `OPTPARSE_IMPLEMENTATION` before
 including `optparse.h`.
@@ -130,6 +129,7 @@ Here's the same thing translated to Optparse.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #define OPTPARSE_IMPLEMENTATION
 #define OPTPARSE_API static
 #include "optparse.h"
@@ -179,6 +179,7 @@ And here's a conversion to long options.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #define OPTPARSE_IMPLEMENTATION
 #define OPTPARSE_API static
 #include "optparse.h"
@@ -230,3 +231,11 @@ int main(int argc, char **argv)
     return 0;
 }
 ~~~
+
+## Subcommand Parsing
+
+To parse subcommands, first parse options with permutation disabled. These
+are the "global" options that come before the subcommand. Then parse the
+remainder, optionally permuting, as a new option array.
+
+See `examples/subcommands.c` for a complete, working example.
