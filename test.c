@@ -76,7 +76,7 @@ manual_test(int argc, char **argv)
     char **argv_copy = malloc(size);
 
     memcpy(argv_copy, argv, size);
-    printf("\nOPTPARSE\n");
+    printf("OPTPARSE\n");
     try_optparse(argv_copy);
 
     printf("\nOPTPARSE LONG\n");
@@ -155,19 +155,19 @@ testsuite(void)
             {"", "--delay", 0},
             {0, 0, 0, 0, 0},
             {0},
-            OPTPARSE_MSG_MISSING
+            OPTPARSE_MISSING
         },
         {
             {"", "--foo", "bar", 0},
             {0, 0, 0, 0, 0},
             {"--foo", "bar", 0},
-            OPTPARSE_MSG_INVALID
+            OPTPARSE_INVALID
         },
         {
             {"", "-x", 0},
             {0, 0, 0, 0, 0},
             {"-x", 0},
-            OPTPARSE_MSG_INVALID
+            OPTPARSE_INVALID
         },
         {
             {"", "-", 0},
