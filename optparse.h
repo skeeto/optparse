@@ -143,7 +143,7 @@ optparse_init(struct optparse *options, char **argv)
 {
     options->argv = argv;
     options->permute = 1;
-    options->optind = 1;
+    options->optind = argv[0] != 0;
     options->subopt = 0;
     options->optarg = 0;
     options->errmsg[0] = '\0';
