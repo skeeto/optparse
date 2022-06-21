@@ -71,6 +71,8 @@ struct optparse_long {
     const char *longname;
     int shortname;
     enum optparse_argtype argtype;
+    void (*do_this_func_for_this_arg)();
+    char * description_of_this_arg;
 };
 
 /**
