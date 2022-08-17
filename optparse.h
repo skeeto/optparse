@@ -390,8 +390,8 @@ optparse_long(struct optparse *options,
                 options->optarg = options->argv[options->optind];
                 if (options->optarg == 0)
                     return optparse_error(options, OPTPARSE_MSG_MISSING, name);
-                else
-                    options->optind++;
+
+                options->optind++;
             }
             return options->optopt;
         }
