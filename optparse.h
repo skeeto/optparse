@@ -120,6 +120,7 @@ char *optparse_arg(struct optparse *options);
 #define OPTPARSE_MSG_INVALID "invalid option"
 #define OPTPARSE_MSG_MISSING "option requires an argument"
 #define OPTPARSE_MSG_TOOMANY "option takes no arguments"
+#define OPTPARSE_MSG_UNKNOWN "unknown error"
 
 static int
 optparse_error(struct optparse *options, const char *msg, const char *data)
@@ -259,8 +260,12 @@ optparse(struct optparse *options, const char *optstring)
         else
             options->optarg = 0;
         return option[0];
+    default: {
+        char str[2] = {0, 0};
+        str[0] = option[0];
+        return optparse_error(options, OPTPARSE_MSG_UNKNOWN, str);
     }
-    return 0;
+    }
 }
 
 OPTPARSE_API
