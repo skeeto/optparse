@@ -6,5 +6,8 @@ test : test.c optparse.h
 run : test
 	./test -abdfoo -c bar subcommand example.txt -a
 
+check: test
+	./test
+
 clean :
 	rm -f test
