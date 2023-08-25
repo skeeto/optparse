@@ -42,7 +42,7 @@ int main(int argc, char **argv)
         case 'd':
             delay = options.optarg ? atoi(options.optarg) : 1;
             break;
-        case '?':
+        default:
             fprintf(stderr, "%s: %s\n", argv[0], options.errmsg);
             exit(EXIT_FAILURE);
         }
@@ -52,5 +52,5 @@ int main(int argc, char **argv)
     while ((arg = optparse_arg(&options)))
         printf("%s\n", arg);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
