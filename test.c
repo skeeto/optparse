@@ -48,7 +48,7 @@ try_optparse_long(char **argv)
         {"color", 'c', OPTPARSE_REQUIRED},
         {"delay", 'd', OPTPARSE_OPTIONAL},
         {"erase", 256, OPTPARSE_REQUIRED},
-        {0, 0, 0}
+        {0, 0, OPTPARSE_NONE}
     };
 
     print_argv(argv);
@@ -73,7 +73,7 @@ static int
 manual_test(int argc, char **argv)
 {
     size_t size = (argc + 1) * sizeof(*argv);
-    char **argv_copy = malloc(size);
+    char **argv_copy = (char **)malloc(size);
 
     memcpy(argv_copy, argv, size);
     printf("\nOPTPARSE\n");
@@ -90,7 +90,7 @@ testsuite(void)
     struct config {
         char amend;
         char brief;
-        char *color;
+        const char *color;
         int delay;
         int erase;
     };
@@ -196,7 +196,7 @@ testsuite(void)
         {"color", 'c', OPTPARSE_OPTIONAL},
         {"delay", 'd', OPTPARSE_REQUIRED},
         {"erase", 'e', OPTPARSE_NONE},
-        {0, 0, 0}
+        {0, 0, OPTPARSE_NONE}
     };
 
     for (i = 0; i < ntests; i++) {

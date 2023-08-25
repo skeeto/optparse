@@ -46,9 +46,20 @@
  */
 #ifndef OPTPARSE_H
 #define OPTPARSE_H
+#if !(__ASSEMBLER__ + __LINKER__ + 0)
 
 #ifndef OPTPARSE_API
 #  define OPTPARSE_API
+#endif
+
+enum optparse_argtype {
+    OPTPARSE_NONE,
+    OPTPARSE_REQUIRED,
+    OPTPARSE_OPTIONAL
+};
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 struct optparse {
@@ -59,12 +70,6 @@ struct optparse {
     char *optarg;
     char errmsg[64];
     int subopt;
-};
-
-enum optparse_argtype {
-    OPTPARSE_NONE,
-    OPTPARSE_REQUIRED,
-    OPTPARSE_OPTIONAL
 };
 
 struct optparse_long {
@@ -82,7 +87,7 @@ void optparse_init(struct optparse *options, char **argv);
 /**
  * Read the next option in the argv array.
  * @param optstring a getopt()-formatted option string.
- * @return the next option character, -1 for done, or '?' for error
+ * @return the next option character, -1 for done, or 0 for error
  *
  * Just like getopt(), a character followed by no colons means no
  * argument. One colon means the option has a required argument. Two
@@ -114,6 +119,11 @@ int optparse_long(struct optparse *options,
 OPTPARSE_API
 char *optparse_arg(struct optparse *options);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+#endif /* !(__ASSEMBLER__ + __LINKER__ + 0) */
+
 /* Implementation */
 #ifdef OPTPARSE_IMPLEMENTATION
 
@@ -134,7 +144,7 @@ optparse_error(struct optparse *options, const char *msg, const char *data)
         options->errmsg[p++] = *data++;
     options->errmsg[p++] = '\'';
     options->errmsg[p++] = '\0';
-    return '?';
+    return 0;
 }
 
 OPTPARSE_API

@@ -16,17 +16,18 @@ static int cmd_echo(char **argv)
 
     optparse_init(&options, argv);
     options.permute = 0;
-    while ((option = optparse(&options, "hn")) != -1) {
+    while ((option = optparse(&options, "?hn")) != -1) {
         switch (option) {
+        case '?':
         case 'h':
-            puts("usage: echo [-hn] [ARG]...");
-            return 0;
+            puts("usage: echo [-?hn] [ARG]...");
+            return EXIT_SUCCESS;
         case 'n':
             newline = false;
             break;
-        case '?':
+        default:
             fprintf(stderr, "%s: %s\n", argv[0], options.errmsg);
-            return 1;
+            return EXIT_FAILURE;
         }
     }
     argv += options.optind;
@@ -48,29 +49,30 @@ static int cmd_sleep(char **argv)
     struct optparse options;
 
     optparse_init(&options, argv);
-    while ((option = optparse(&options, "h")) != -1) {
+    while ((option = optparse(&options, "?h")) != -1) {
         switch (option) {
-        case 'h':
-            puts("usage: sleep [-h] [NUMBER]...");
-            return 0;
         case '?':
+        case 'h':
+            puts("usage: sleep [-?h] [NUMBER]...");
+            return EXIT_SUCCESS;
+        default:
             fprintf(stderr, "%s: %s\n", argv[0], options.errmsg);
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 
     for (i = 0; argv[i]; i++) {
         if (sleep(atoi(argv[i]))) {
-            return 1;
+            return EXIT_FAILURE;
         }
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 static void
 usage(FILE *f)
 {
-    fprintf(f, "usage: example [-h] <echo|sleep> [OPTION]...\n");
+    fprintf(f, "usage: example [-?h] <echo|sleep> [OPTION]...\n");
 }
 
 int main(int argc, char **argv)
@@ -91,15 +93,16 @@ int main(int argc, char **argv)
     (void)argc;
     optparse_init(&options, argv);
     options.permute = 0;
-    while ((option = optparse(&options, "h")) != -1) {
+    while ((option = optparse(&options, "?h")) != -1) {
         switch (option) {
+        case '?':
         case 'h':
             usage(stdout);
-            return 0;
-        case '?':
+            return EXIT_SUCCESS;
+        default:
             usage(stderr);
             fprintf(stderr, "%s: %s\n", argv[0], options.errmsg);
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 
@@ -107,7 +110,7 @@ int main(int argc, char **argv)
     if (!subargv[0]) {
         fprintf(stderr, "%s: missing subcommand\n", argv[0]);
         usage(stderr);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     for (i = 0; i < ncmds; i++) {
@@ -116,5 +119,5 @@ int main(int argc, char **argv)
         }
     }
     fprintf(stderr, "%s: invalid subcommand: %s\n", argv[0], subargv[0]);
-    return 1;
+    return EXIT_FAILURE;
 }
