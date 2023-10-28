@@ -8,7 +8,7 @@
 #define OPTPARSE_IMPLEMENTATION
 #include "../optparse.h"
 
-static int cmd_echo(char **argv)
+static int cmd_echo(const char **argv)
 {
     int i, option;
     bool newline = true;
@@ -42,7 +42,7 @@ static int cmd_echo(char **argv)
     return !!ferror(stdout);
 }
 
-static int cmd_sleep(char **argv)
+static int cmd_sleep(const char **argv)
 {
     int i, option;
     struct optparse options;
@@ -73,20 +73,20 @@ usage(FILE *f)
     fprintf(f, "usage: example [-h] <echo|sleep> [OPTION]...\n");
 }
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
     int i, option;
-    char **subargv;
+    const char **subargv;
     struct optparse options;
 
     static const struct {
         char name[8];
-        int (*cmd)(char **);
+        int (*cmd)(const char **);
     } cmds[] = {
         {"echo",  cmd_echo },
         {"sleep", cmd_sleep},
     };
-    int ncmds = sizeof(cmds) / sizeof(*cmds);
+    const int ncmds = sizeof(cmds) / sizeof(*cmds);
 
     (void)argc;
     optparse_init(&options, argv);

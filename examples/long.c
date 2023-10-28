@@ -7,9 +7,9 @@
 #define OPTPARSE_API static
 #include "../optparse.h"
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
-    struct optparse_long longopts[] = {
+    const struct optparse_long longopts[] = {
         {"amend", 'a', OPTPARSE_NONE},
         {"brief", 'b', OPTPARSE_NONE},
         {"color", 'c', OPTPARSE_REQUIRED},
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     const char *color = "white";
     int delay = 0;
 
-    char *arg;
+    const char *arg;
     int option;
     struct optparse options;
 

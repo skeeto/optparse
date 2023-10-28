@@ -7,14 +7,14 @@
 #define OPTPARSE_API static
 #include "../optparse.h"
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
     bool amend = false;
     bool brief = false;
     const char *color = "white";
     int delay = 0;
 
-    char *arg;
+    const char *arg;
     int option;
     struct optparse options;
 
