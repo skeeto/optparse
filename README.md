@@ -1,5 +1,12 @@
 # Optparse
 
+(Note that this is a shameless copy of the [parent `skeeto/optparse`
+repo](https://www.github.com/skeeto/optparse),  except that `const` is
+used where reasonable;  non-ambiguous partial long options are handled,
+a la GNU getopt_long;  and I added text below mentioning that this
+extends `getopt` to non-POSIX systems,  which I consider to be a Big Deal.
+Other than that,  it's the same code.)
+
 Optparse is a public domain, portable, reentrant, embeddable, getopt-like
 option parser. As a single header file, it's trivially dropped into any
 project. It supports POSIX getopt option strings, GNU-style long options,
