@@ -58,7 +58,7 @@ try_optparse_long(char **argv)
         if (opt == '?') {
             printf("%s: %s\n", argv[0], options.errmsg);
         }
-        buf[0] = opt;
+        buf[0] = (char)opt;
         printf("%-6s(%d, %d) = '%s'\n",
                opt < 127 ? buf : longopts[longindex].longname,
                options.optind, longindex, options.optarg);
