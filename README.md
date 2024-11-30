@@ -1,5 +1,7 @@
 # Optparse
 
+[![Build Status](https://github.com/skeeto/optparse/actions/workflows/ci.yml/badge.svg)](https://github.com/skeeto/optparse/actions/workflows/ci.yml)
+
 Optparse is a public domain, portable, reentrant, embeddable, getopt-like
 option parser. As a single header file, it's trivially dropped into any
 project. It supports POSIX getopt option strings, GNU-style long options,
