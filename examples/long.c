@@ -48,7 +48,12 @@ int main(int argc, char **argv)
         }
     }
 
-    /* Print remaining arguments. */
+    printf("amend : %s\n", amend ? "true" : "false");
+    printf("brief : %s\n", brief ? "true" : "false");
+    printf("color : %s\n", color);
+    printf("delay : %d\n", delay);
+
+    printf("Print remaining arguments:\n");
     while ((arg = optparse_arg(&options)))
         printf("%s\n", arg);
 
