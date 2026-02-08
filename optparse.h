@@ -256,6 +256,13 @@ optparse(struct optparse *options, const char *optstring)
         options->optind++;
         if (option[1])
             options->optarg = option + 1;
+#ifdef IMPROVED_OPTPARSE_OPTIONAL
+        else if (next && next[0] != '-')
+        {
+            options->optarg = next;
+            options->optind++;
+        }
+#endif
         else
             options->optarg = 0;
         return option[0];
